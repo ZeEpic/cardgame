@@ -1,0 +1,18 @@
+name: CardGame
+version: '${project.version}'
+main: me.zeepic.cardgame.Main
+api-version: 1.8
+authors: [ ZeEpic ]
+description: A Minecraft card game in version 1.8.
+commands:
+  test:
+    description: For testing stuff.
+    usage: /<command>
+  killcards:
+    description: Kills every phyisical card in the world.
+    usage: /<command> <nearest/all>
+  start:
+    description: Starts a card game.
+    usage: /<command> <player>
+  temp:
+    usage: /<command>

@@ -1,0 +1,43 @@
+welcome_message: §a§lHi, welcome to ACard.minehut.gg
+board:
+  offset: -3;65;-1
+  position_offset: 4;0;2
+turn_length: 20
+cards:
+  name:
+    values_separator: §7 |
+  item_lore:
+    basic_monster: §7Type §f| §6%s\n§7Health §f| §c%s\n§7Damage §f| §4%s\n§7Speed §f| §3%s\n\n%s\n\n\n§7§o%s
+    action_monster: §7Type §f| §6%s\n§7Health §f| §c%s\n§7Damage §f| §4%s\n§7Speed §f| §3%s\n\n§7Action(s) §f| \n§8%s\n\n%s\n\n\n§7§o%s
+    spell: §7Type §f| %s\n§7Action §f| §8%s\n\n%s\n\n\n§7§o%s
+  rarity_level:
+    0: §fCommon
+    1: §3Uncommon
+    2: §6Rare
+    3: §5Fabled
+    4: §dSpecial
+white_team:
+  card_direction: 1;0;0
+  block: QUARTZ_BLOCK
+black_team:
+  card_direction: -1;0;0
+  block: COAL_BLOCK
+player1:
+  base: 5;66;5
+  base_block: ENCHANTMENT_TABLE
+player2:
+  base: -4;66;0
+  base_block: ENCHANTMENT_TABLE
+items:
+  lore:
+    type_text: Type §f| %s\n
+    attack_cards: §7§oUse this to make your monsters attack\n (try clicking on your monster with this).\nAttack the enemy's enchantment table to win!
+    casting_power: §7§oThis is how much power you have to cast a card\n (for example, you can play a 7 cost card\nwith 7 of these, or both a 3 and a 4 cost card).
+    move_cards: §7§oUse this to move your monsters\n(try clicking your monster with this).
+    next_step: §7§o"Use this to pass to the next step.\n\nThe turn order is:\n - Get 1 more card and casting power\n - Move your monsters\n - Attack enemy monsters\n - Play cards from your hand\n - Pass the turn
+    board_position: §2Board Position §f- %d, %d
+  hotbar:
+    move_cards: 0
+    attack_cards: 1
+    next_step: 2
+    cards_offset: 4
