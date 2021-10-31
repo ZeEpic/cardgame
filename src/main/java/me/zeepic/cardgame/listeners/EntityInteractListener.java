@@ -4,6 +4,7 @@ import me.zeepic.cardgame.Main;
 import me.zeepic.cardgame.cards.Monster;
 import me.zeepic.cardgame.enums.State;
 import me.zeepic.cardgame.game.CardGamePlayer;
+import me.zeepic.cardgame.util.Config;
 import me.zeepic.cardgame.util.ListenerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,13 +18,14 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.metadata.MetadataValue;
 
 import java.util.List;
 
 public class EntityInteractListener extends ListenerUtil implements Listener {
 
-    public static final Location spawnLocation = new Location(Bukkit.getWorld("world"), 0, 67, -2.5);
+    public static final Location spawnLocation = new Location(Bukkit.getWorld("world"), 1, 66, -12.5, -162, 4   );
 
     private final Main plugin;
 
@@ -46,19 +48,16 @@ public class EntityInteractListener extends ListenerUtil implements Listener {
 
     @EventHandler
     public void onPlayerDamage(EntityDamageEvent event) {
-
-        if (!event.getEntityType()
-                .equals(EntityType.PLAYER))
+        if (!event.getEntityType().equals(EntityType.PLAYER))
             return;
 
         event.setCancelled(true);
-        if (!event.getCause()
-                .equals(EntityDamageEvent.DamageCause.VOID))
-            return;
+    }
 
-        Player player = (Player) event.getEntity();
-        player.teleport(spawnLocation);
-        
+    @EventHandler
+    public void onMove(PlayerMoveEvent event) {
+        if (event.getPlayer().getLocation().getY() < 50)
+            event.getPlayer().teleport(spawnLocation);
     }
 
     @EventHandler
@@ -96,22 +95,21 @@ public class EntityInteractListener extends ListenerUtil implements Listener {
         if (player == null)
             return;
 
-        if (slot == 0) {
+        ArmorStandInteractions interactions = new ArmorStandInteractions();
+        if (slot == Config.getInt("items.hotbar.move_cards")) {
             // move armor stand
             if (!player.getState().equals(State.MOVE_STEP)
                     && !player.getState().equals(State.MOVING)) {
                 player.getPlayer().sendMessage("You must be in the move step during your turn to move a card.");
                 return;
             }
-            if (card.getSpeed() <= 0
-                    || !player.getPlayer().equals(card.getOwner().getPlayer()))
-                return;
-            player.setState(State.MOVING);
-            player.setUsing(card);
-            damager.sendMessage("Click an adjacent block to move this card.");
-        } else if (slot == 1) {
+            interactions.beginMoveCard(player, card);
+        } else if (slot == Config.getInt("items.hotbar.attack_cards")) {
             // attack!
-            ArmorStandInteractions interactions = new ArmorStandInteractions();
+            if (card.isAttackedThisTurn()) {
+                player.getPlayer().sendMessage("This card is exhausted, because it already attacked this turn.");
+                return;
+            }
             if (player.getState().equals(State.ATTACK_STEP)) {
                 interactions.beginAttack(player, card);
             } else if (player.getState().equals(State.ATTACKING)) {
@@ -119,8 +117,9 @@ public class EntityInteractListener extends ListenerUtil implements Listener {
                     interactions.beginAttack(player, card);
                 else
                     interactions.attackArmorStand(player, card);
-            } else
+            } else {
                 player.getPlayer().sendMessage("You must be in the attack step during your turn to move a card.");
+            }
 
         } else {
             damager.openInventory(card.getInventory());

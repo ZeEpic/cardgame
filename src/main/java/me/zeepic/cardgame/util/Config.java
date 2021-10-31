@@ -6,7 +6,7 @@ import org.bukkit.util.Vector;
 public class Config {
 
     public static String getString(String path) {
-        return Main.getInstance().getMyConfig().getString(path);
+        return Main.getInstance().getMyConfig().getString(path).replace("\\n", "\n");
     }
     public static int getInt(String path) {
         return Main.getInstance().getMyConfig().getInt(path);

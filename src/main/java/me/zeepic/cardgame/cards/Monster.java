@@ -166,8 +166,8 @@ public abstract class Monster extends Card implements InventoryHolder {
         Vector boardPositionOffset = Config.getVector("board.position_offset");
         inv.setItem(1, new Item(Material.VINE,
                 String.format(Config.getString("items.lore.board_position"),
-                        location.getBlockX() + boardPositionOffset.getX(),
-                        location.getBlockZ() + boardPositionOffset.getZ()
+                        location.getBlockX() + boardPositionOffset.getBlockX(),
+                        location.getBlockZ() + boardPositionOffset.getBlockX()
                 )
         ));
         inv.setItem(2, getItem());

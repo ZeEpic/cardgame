@@ -5,10 +5,10 @@ board:
 turn_length: 20
 cards:
   name:
-    values_separator: §7 |
+    values_separator: §7 | §7
   item_lore:
     basic_monster: §7Type §f| §6%s\n§7Health §f| §c%s\n§7Damage §f| §4%s\n§7Speed §f| §3%s\n\n%s\n\n\n§7§o%s
-    action_monster: §7Type §f| §6%s\n§7Health §f| §c%s\n§7Damage §f| §4%s\n§7Speed §f| §3%s\n\n§7Action(s) §f| \n§8%s\n\n%s\n\n\n§7§o%s
+    action_monster: §7Type §f| §6%s\n§7Health §f| §c%s\n§7Damage §f| §4%s\n§7Speed §f| §3%s\n\n§7Action(s) §f| \n§7%s\n\n%s\n\n\n§7§o%s
     spell: §7Type §f| %s\n§7Action §f| §8%s\n\n%s\n\n\n§7§o%s
   rarity_level:
     0: §fCommon

@@ -13,22 +13,36 @@ import java.util.List;
 
 public class ArmorStandInteractions {
 
+    public void beginMoveCard(CardGamePlayer player, Monster card) {
+
+        if (card.getSpeed() <= 0) {
+            player.getPlayer().sendMessage("This card is exhausted. Wait until next turn for it's speed to recharge.");
+            return;
+        }
+        if (!player.getPlayer().equals(card.getOwner().getPlayer())) {
+            player.getPlayer().sendMessage("You can only move your own cards.");
+            return;
+        }
+
+        player.setState(State.MOVING);
+        player.setUsing(card);
+        player.getPlayer().sendMessage("Click an adjacent block to move this card.");
+
+    }
+
     public void moveArmorStand(CardGamePlayer player, Location clickLocation) {
 
         Monster using = player.getUsing();
         final boolean canMoveArmorStand = player.getState().equals(State.MOVING)
                 && using != null
-                && using.getLocation()
-                .distance(clickLocation)
-                <= 1.0
+                && using.getLocation().distance(clickLocation) <= 1.0
                 && !using.getLocation().equals(clickLocation)
-                && player.getGame().getOverlappingMonsters(clickLocation).size() == 0;
+                && player.getGame().getOverlappingMonsters(clickLocation).isEmpty();
         if (!canMoveArmorStand)
             return;
 
-        using.setLocation(player.getGame()
-                .getBoardLocation(clickLocation)
-        ); // to move the armor stand after you've selected where it should go
+        // to move the armor stand after you've selected where it should go
+        using.setLocation(player.getGame().getBoardLocation(clickLocation));
         Location location = using.getLocation();
         using.setSpeed(using.getSpeed() - 1);
         using.updateArmorStand();
@@ -36,45 +50,22 @@ public class ArmorStandInteractions {
                 + ChatColor.GOLD + location.getBlockX() + ", "
                 + location.getBlockZ() + ChatColor.WHITE + ".");
         player.setUsing(null);
-        player.setState(State.MOVE_STEP);
+
+        nextPhase(player);
 
     }
 
-    public void nextStep(CardGamePlayer player) {
+    public void forceNextPhase(CardGamePlayer player) {
 
-        State state = player.getState();
-        if (state.equals(State.WAITING))
+        if (player.getState().equals(State.WAITING))
             return;
-        else if (state.equals(State.MOVING) || state.equals(State.MOVE_STEP))
-            if (player.getPlayedCards().size() > 0)
-                player.setState(State.ATTACK_STEP);
-            else if (player.getCards().length > 0)
-                player.setState(State.PLAY_STEP);
-            else {
-                endTurn(player);
-                return;
-            }
-        else if (state.equals(State.ATTACKING) || state.equals(State.ATTACK_STEP))
-            if (player.getCards().length > 0)
-                player.setState(State.PLAY_STEP);
-            else {
-                endTurn(player);
-                return;
-            }
-        else if (state.equals(State.PLAY_STEP)) {
-            endTurn(player);
-            return;
-        }
-        player.getPlayer().sendMessage("You are now "
-                + player.getState().toString().toLowerCase().replace("_", " ")
-                + ".");
+        nextPhase(player);
 
     }
 
     private void endTurn(CardGamePlayer player) {
         player.getGame().endTurn(player);
-        player.getPlayer().sendMessage("It is now the opponent's turn.");
-
+        player.getPlayer().sendTitle(ChatColor.GOLD + "Opponent's Turn", " ");
     }
 
     public void playCard(CardGamePlayer player, int cardSlot, Location clickLocation) {
@@ -105,6 +96,8 @@ public class ArmorStandInteractions {
         player.removeCard(realSlot);
         player.addCastingPower(-card.getCost());
         card.play(player, boardLocation);
+
+        nextPhase(player);
 
     }
 
@@ -146,8 +139,10 @@ public class ArmorStandInteractions {
                 + ChatColor.GOLD + location.getBlockX() + ", "
                 + location.getBlockZ() + ChatColor.WHITE + " for " + using.getDamage() + " damage.");
         location.getWorld().playEffect(location, Effect.CRIT, 0);
+        using.setAttackedThisTurn(true);
         player.setUsing(null);
-        player.setState(State.ATTACK_STEP);
+
+        nextPhase(player);
 
     }
 
@@ -170,11 +165,26 @@ public class ArmorStandInteractions {
         player.getPlayer().sendMessage("You attacked your opponent's enchantment table for " + using.getDamage() + " damage!");
         player.getGame().getOtherPlayer(player).subtractHealth(using.getDamage());
         using.setAttackedThisTurn(true);
-        clickLocation.getWorld().playEffect(clickLocation.add(0, 2, 0), Effect.CRIT, 0);
+        clickLocation.getWorld().playEffect(clickLocation.clone().add(0, 2, 0), Effect.CRIT, 0);
         player.setUsing(null);
-        player.setState(State.ATTACK_STEP);
 
+        nextPhase(player);
 
+    }
+
+    public void nextPhase(CardGamePlayer player) {
+        if (player.hasMovableCards() && player.getState().equals(State.MOVING)) {
+            player.setState(State.MOVE_STEP);
+            player.getPlayer().sendTitle(ChatColor.GOLD + "Move Step", " ");
+        } else if (player.hasBloodthirstyCards() && !player.getState().equals(State.PLAY_STEP)) {
+            player.setState(State.ATTACK_STEP);
+            player.getPlayer().sendTitle(ChatColor.GOLD + "Attack Step", " ");
+        } else if (player.hasPlayableCards()) {
+            player.setState(State.PLAY_STEP);
+            player.getPlayer().sendTitle(ChatColor.GOLD + "Play Step", " ");
+        } else {
+            endTurn(player);
+        }
     }
 
 }

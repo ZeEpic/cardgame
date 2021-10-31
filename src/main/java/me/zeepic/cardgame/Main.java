@@ -9,7 +9,6 @@ import lombok.Getter;
 import me.zeepic.cardgame.cards.Card;
 import me.zeepic.cardgame.cards.TestCard;
 import me.zeepic.cardgame.commands.*;
-import me.zeepic.cardgame.enums.Rank;
 import me.zeepic.cardgame.game.CardGamePlayer;
 import me.zeepic.cardgame.game.GameManager;
 import me.zeepic.cardgame.game.PlayerDocument;

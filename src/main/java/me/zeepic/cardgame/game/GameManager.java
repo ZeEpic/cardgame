@@ -9,11 +9,13 @@ import me.zeepic.cardgame.enums.State;
 import me.zeepic.cardgame.enums.Team;
 import me.zeepic.cardgame.util.Config;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -89,8 +91,11 @@ public final class GameManager {
         previousTurn.setState(State.WAITING);
         previousTurn.getPlayedCards().forEach(Monster::onEndTurn);
         CardGamePlayer enemyPlayer = getOtherPlayer(previousTurn);
-        if (enemyPlayer.getPlayedCards().size() > 0) // pass the turn, now the enemy can move their monsters
+        enemyPlayer.getPlayedCards().forEach(Monster::onBeginTurn);
+        if (enemyPlayer.hasMovableCards()) // pass the turn, now the enemy can move their monsters
             enemyPlayer.setState(State.MOVE_STEP);
+        else if (enemyPlayer.hasBloodthirstyCards())
+            enemyPlayer.setState(State.ATTACK_STEP);
         else if (enemyPlayer.getCards().length > 0)
             enemyPlayer.setState(State.PLAY_STEP);
         else {
@@ -99,14 +104,11 @@ public final class GameManager {
         }
         enemyPlayer.addCard(TestCard.class); // TODO: this will be a card from their deck
         enemyPlayer.addCastingPower(1);
-        enemyPlayer.getPlayer().sendMessage("It is now your turn.");
-        //enemyPlayer.startTurnTimer();
+        enemyPlayer.getPlayer().sendTitle(ChatColor.GOLD + "Your Turn", " ");
         previousTurn.getPlayedCards().forEach(monster -> {
             monster.setSpeed(monster.getMaxSpeed());
-            monster.setHealth(monster.getMaxHealth());
             monster.updateArmorStand();
             monster.setAttackedThisTurn(false);
-            monster.onBeginTurn();
         });
         previousTurn.getScoreboard().updateScoreboard(previousTurn);
         enemyPlayer.getScoreboard().updateScoreboard(enemyPlayer);
@@ -114,7 +116,8 @@ public final class GameManager {
 
     public List<Monster> getPlayedCards() {
 
-        List<Monster> playedCards = getPlayer1().getPlayedCards();
+        List<Monster> playedCards = new ArrayList<>();
+        playedCards.addAll(getPlayer1().getPlayedCards());
         playedCards.addAll(getPlayer2().getPlayedCards());
         return playedCards;
 

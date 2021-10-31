@@ -64,7 +64,7 @@ public class InteractListener extends ListenerUtil implements Listener {
                 interactions.attackEnchantmentTable(gamePlayer, location.subtract(0, 1, 0));
             }
         } else if (itemSlot == Config.getInt("items.hotbar.next_step")) {
-            interactions.nextStep(gamePlayer);
+            interactions.forceNextPhase(gamePlayer);
         }
 
     }

@@ -21,7 +21,9 @@ import org.bukkit.inventory.PlayerInventory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public final class CardGamePlayer {
 
@@ -30,7 +32,6 @@ public final class CardGamePlayer {
     };
     @Getter @Setter private Monster       using;
     @Getter @Setter private Card[]        cards = new Card[5];
-    @Getter @Setter private State         state = State.WAITING;
     @Getter @Setter private Team          team;
     @Getter @Setter private int           health = 20;
     @Getter @Setter private int           turnTaskId;
@@ -39,6 +40,7 @@ public final class CardGamePlayer {
     @Getter private final   boolean       player1;
     @Getter private final   Player        player;
     @Getter private final   Location      enchantingTable;
+    @Getter private         State         state = State.WAITING;
     @Getter private         int           castingPower;
 
     @Getter @Setter private CountdownTimer timer;
@@ -52,8 +54,6 @@ public final class CardGamePlayer {
         this.enchantingTable = enchantingTable;
         PlayerInventory inv = player.getInventory();
 
-        Bukkit.broadcastMessage("Adding items.");
-        inv.addItem(new ItemStack(Material.BEDROCK));
         inv.addItem(new MoveCard());
         inv.addItem(new AttackCard());
         inv.addItem(new NextStep());
@@ -112,6 +112,35 @@ public final class CardGamePlayer {
             return;
         }
         getPlayer().sendMessage("You lost " + damage + " health!");
+    }
+
+    public boolean hasMovableCards() {
+        return getPlayedCards().stream().anyMatch(monster -> monster.getSpeed() > 0);
+    }
+
+    public boolean hasBloodthirstyCards() {
+        List<Monster> monsters = getGame().getOtherPlayer(this).getPlayedCards();
+        return monsters.stream().anyMatch(this::isMonsterAdjacent);
+    }
+
+    private boolean isMonsterAdjacent(Monster monster) {
+        final Location monsterLoc = monster.getLocation();
+        final Location enchantingLoc = monster.getOwner().getEnchantingTable();
+        return getPlayedCards().stream().anyMatch(myMonster ->
+                (myMonster.getLocation().distance(monsterLoc) <= 1.0
+                    || myMonster.getLocation().distance(enchantingLoc) <= 1.0
+                ) && !myMonster.isAttackedThisTurn()
+        );
+    }
+
+    public boolean hasPlayableCards() {
+        Arrays.stream(getCards()).filter(Objects::nonNull).forEach(card -> Bukkit.broadcastMessage(String.valueOf(card.getCost())));
+        return Arrays.stream(getCards()).filter(Objects::nonNull).anyMatch(card -> card.getCost() <= getCastingPower());
+    }
+
+    public void setState(State state) {
+        this.state = state;
+        scoreboard.updateScoreboard(this);
     }
 
 }
