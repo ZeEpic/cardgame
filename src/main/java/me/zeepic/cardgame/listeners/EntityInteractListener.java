@@ -63,7 +63,7 @@ public class EntityInteractListener extends ListenerUtil implements Listener {
     @EventHandler
     public void onPlayerHunger(FoodLevelChangeEvent event) {
         event.setCancelled(true);
-        ((Player) event.getEntity()).setFoodLevel(20);
+        event.getEntity().setFoodLevel(20);
     }
 
     @EventHandler
@@ -90,6 +90,7 @@ public class EntityInteractListener extends ListenerUtil implements Listener {
             return;
 
         Monster card = (Monster) values.get(0).value();
+        assert card != null;
 
         CardGamePlayer player = plugin.getPlayer(damager);
         if (player == null)

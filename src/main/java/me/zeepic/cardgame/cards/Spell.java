@@ -1,14 +1,16 @@
 package me.zeepic.cardgame.cards;
 
 import lombok.Getter;
-import me.zeepic.cardgame.game.BoardLocation;
-import me.zeepic.cardgame.game.CardGamePlayer;
 import me.zeepic.cardgame.enums.CardRarity;
 import me.zeepic.cardgame.enums.CardSubtype;
 import me.zeepic.cardgame.enums.CardType;
+import me.zeepic.cardgame.events.SpellPlayEvent;
+import me.zeepic.cardgame.game.BoardLocation;
+import me.zeepic.cardgame.game.CardGamePlayer;
 import me.zeepic.cardgame.util.Config;
 import me.zeepic.cardgame.util.Item;
 import me.zeepic.cardgame.util.Util;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 
 
@@ -24,7 +26,8 @@ public abstract class Spell extends Card {
 
     @Override
     public void play(CardGamePlayer gamePlayer, BoardLocation location) {
-        onPlayAction();
+        onPlayAction(); // TODO: remove this method
+        Bukkit.getPluginManager().callEvent(new SpellPlayEvent(this));
     }
 
     @Override

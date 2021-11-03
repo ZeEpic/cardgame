@@ -2,22 +2,17 @@ package me.zeepic.cardgame.cards;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.zeepic.cardgame.enums.*;
+import me.zeepic.cardgame.events.MonsterActionEvent;
 import me.zeepic.cardgame.game.BoardLocation;
 import me.zeepic.cardgame.game.CardGamePlayer;
-import me.zeepic.cardgame.enums.CardRarity;
-import me.zeepic.cardgame.enums.CardSubtype;
-import me.zeepic.cardgame.enums.CardType;
-import me.zeepic.cardgame.enums.Team;
 import me.zeepic.cardgame.util.Config;
 import me.zeepic.cardgame.util.Item;
 import me.zeepic.cardgame.util.Util;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Effect;
+import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
@@ -92,7 +87,8 @@ public abstract class Monster extends Card implements InventoryHolder {
                                 getOwner().getTeam())
                         )
         );
-        onMove();
+        onMove(); // TODO: remove this method
+        Bukkit.getPluginManager().callEvent(new MonsterActionEvent(this, Action.MOVE));
         // TODO make it move slowly
     }
 
@@ -113,7 +109,8 @@ public abstract class Monster extends Card implements InventoryHolder {
     public void play(CardGamePlayer gamePlayer, BoardLocation location) {
         spawnPhysicalCard(location, getOwner().getTeam());
         gamePlayer.getPlayedCards().add(this);
-        onPlayAction();
+        onPlayAction(); // TODO: remove this method
+        Bukkit.getPluginManager().callEvent(new MonsterActionEvent(this, Action.PLAY));
         getOwner().getPlayer().sendMessage(ChatColor.GREEN + "You played a " + getName() + ".");
     }
 
@@ -162,7 +159,7 @@ public abstract class Monster extends Card implements InventoryHolder {
         Inventory inv = Bukkit.createInventory(this, InventoryType.HOPPER, getName());
 
         Location location = getArmorStand().getLocation();
-        inv.setItem(0, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
+        inv.setItem(0, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
         Vector boardPositionOffset = Config.getVector("board.position_offset");
         inv.setItem(1, new Item(Material.VINE,
                 String.format(Config.getString("items.lore.board_position"),
@@ -172,15 +169,16 @@ public abstract class Monster extends Card implements InventoryHolder {
         ));
         inv.setItem(2, getItem());
 
-        ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3); // player skull
+        ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) skull.getItemMeta();
-        String ownerName = getOwner().getPlayer().getName();
-        meta.setDisplayName(ChatColor.WHITE + ownerName);
-        meta.setOwner(ownerName);
+        Player player = getOwner().getPlayer();
+        assert meta != null;
+        meta.setDisplayName(ChatColor.WHITE + player.getName());
+        meta.setOwningPlayer(player);
         skull.setItemMeta(meta);
         inv.setItem(3, skull);
 
-        inv.setItem(4, Item.withName(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7), " "));
+        inv.setItem(4, new Item(Material.GRAY_STAINED_GLASS_PANE, " "));
 
         return inv;
 
@@ -195,8 +193,8 @@ public abstract class Monster extends Card implements InventoryHolder {
 
         if (getArmorStand() == null)
             return;
-        onDeath();
-        getOwner().getPlayer().getWorld().playEffect(getArmorStand().getLocation(), Effect.FLAME, 0);
+        onDeath(); // TODO: remove this method
+        Bukkit.getPluginManager().callEvent(new MonsterActionEvent(this, Action.DEATH));
         getArmorStand().remove();
         getOwner().getPlayedCards().remove(this);
 

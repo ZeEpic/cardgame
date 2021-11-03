@@ -2,11 +2,14 @@ package me.zeepic.cardgame.listeners;
 
 import me.zeepic.cardgame.cards.Card;
 import me.zeepic.cardgame.cards.Monster;
+import me.zeepic.cardgame.enums.Action;
 import me.zeepic.cardgame.enums.State;
+import me.zeepic.cardgame.events.MonsterActionEvent;
 import me.zeepic.cardgame.game.BoardLocation;
 import me.zeepic.cardgame.game.CardGamePlayer;
+import me.zeepic.cardgame.util.Util;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Effect;
 import org.bukkit.Location;
 
 import java.util.List;
@@ -65,7 +68,7 @@ public class ArmorStandInteractions {
 
     private void endTurn(CardGamePlayer player) {
         player.getGame().endTurn(player);
-        player.getPlayer().sendTitle(ChatColor.GOLD + "Opponent's Turn", " ");
+        Util.sendSimpleTitle(player.getPlayer(), "Opponent's Turn");
     }
 
     public void playCard(CardGamePlayer player, int cardSlot, Location clickLocation) {
@@ -127,18 +130,19 @@ public class ArmorStandInteractions {
             return;
 
         card.setHealth(card.getHealth() - using.getDamage());
-        using.onAttack();
+        using.onAttack(); // TODO: remove this method
+        Bukkit.getPluginManager().callEvent(new MonsterActionEvent(using, Action.ATTACK));
         if (card.getHealth() <= 0) {
             card.kill();
         } else {
-            card.onDamage();
+            card.onDamage(); // TODO: remove this method
+            Bukkit.getPluginManager().callEvent(new MonsterActionEvent(card, Action.DAMAGED));
             using.updateArmorStand();
         }
         Location location = card.getLocation();
         player.getPlayer().sendMessage("You attacked the armor stand at "
                 + ChatColor.GOLD + location.getBlockX() + ", "
                 + location.getBlockZ() + ChatColor.WHITE + " for " + using.getDamage() + " damage.");
-        location.getWorld().playEffect(location, Effect.CRIT, 0);
         using.setAttackedThisTurn(true);
         player.setUsing(null);
 
@@ -165,7 +169,6 @@ public class ArmorStandInteractions {
         player.getPlayer().sendMessage("You attacked your opponent's enchantment table for " + using.getDamage() + " damage!");
         player.getGame().getOtherPlayer(player).subtractHealth(using.getDamage());
         using.setAttackedThisTurn(true);
-        clickLocation.getWorld().playEffect(clickLocation.clone().add(0, 2, 0), Effect.CRIT, 0);
         player.setUsing(null);
 
         nextPhase(player);
@@ -175,13 +178,13 @@ public class ArmorStandInteractions {
     public void nextPhase(CardGamePlayer player) {
         if (player.hasMovableCards() && player.getState().equals(State.MOVING)) {
             player.setState(State.MOVE_STEP);
-            player.getPlayer().sendTitle(ChatColor.GOLD + "Move Step", " ");
+            Util.sendSimpleTitle(player.getPlayer(), "Move Step");
         } else if (player.hasBloodthirstyCards() && !player.getState().equals(State.PLAY_STEP)) {
             player.setState(State.ATTACK_STEP);
-            player.getPlayer().sendTitle(ChatColor.GOLD + "Attack Step", " ");
+            Util.sendSimpleTitle(player.getPlayer(), "Attack Step");
         } else if (player.hasPlayableCards()) {
             player.setState(State.PLAY_STEP);
-            player.getPlayer().sendTitle(ChatColor.GOLD + "Play Step", " ");
+            Util.sendSimpleTitle(player.getPlayer(), "Play Step");
         } else {
             endTurn(player);
         }

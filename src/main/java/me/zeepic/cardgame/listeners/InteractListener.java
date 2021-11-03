@@ -14,6 +14,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import java.util.Objects;
+
 public class InteractListener extends ListenerUtil implements Listener {
 
     private final Main plugin;
@@ -45,7 +47,7 @@ public class InteractListener extends ListenerUtil implements Listener {
 
         final int itemSlot = player.getInventory().getHeldItemSlot();
         final ArmorStandInteractions interactions = new ArmorStandInteractions();
-        Location location = event.getClickedBlock().getLocation();
+        Location location = Objects.requireNonNull(event.getClickedBlock()).getLocation();
 
         for (int cardSlot : CardGamePlayer.getCardSlots()) {
             if (itemSlot == cardSlot) {

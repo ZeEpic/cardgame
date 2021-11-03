@@ -10,6 +10,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class Item extends ItemStack {
 
@@ -59,6 +60,7 @@ public class Item extends ItemStack {
 
     public static ItemStack withName(ItemStack itemStack, String name) {
         ItemMeta meta = itemStack.getItemMeta();
+        assert meta != null;
         meta.setDisplayName(name);
         itemStack.setItemMeta(meta);
         return itemStack;
@@ -84,7 +86,7 @@ public class Item extends ItemStack {
 
         ItemMeta meta = item.getItemMeta();
         assert meta != null;
-        return stringFromLore(meta.getLore());
+        return stringFromLore(Objects.requireNonNull(meta.getLore()));
 
     }
 

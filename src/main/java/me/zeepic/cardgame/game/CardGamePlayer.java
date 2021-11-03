@@ -11,7 +11,6 @@ import me.zeepic.cardgame.items.MoveCard;
 import me.zeepic.cardgame.items.NextStep;
 import me.zeepic.cardgame.util.CountdownTimer;
 import me.zeepic.cardgame.util.ObjectiveManager;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -134,7 +133,6 @@ public final class CardGamePlayer {
     }
 
     public boolean hasPlayableCards() {
-        Arrays.stream(getCards()).filter(Objects::nonNull).forEach(card -> Bukkit.broadcastMessage(String.valueOf(card.getCost())));
         return Arrays.stream(getCards()).filter(Objects::nonNull).anyMatch(card -> card.getCost() <= getCastingPower());
     }
 

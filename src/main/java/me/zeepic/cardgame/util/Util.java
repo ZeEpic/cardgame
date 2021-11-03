@@ -1,5 +1,8 @@
 package me.zeepic.cardgame.util;
 
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
 public class Util {
 
     public static String titleCase(String string) {
@@ -13,6 +16,10 @@ public class Util {
                     .append(" ");
         }
         return finalString.toString();
+    }
+
+    public static void sendSimpleTitle(Player player, String text) {
+        player.sendTitle(ChatColor.GOLD + text, " ", 20, 20, 20);
     }
 
 }

@@ -7,6 +7,6 @@ public final class NextStep extends InventoryItem {
 
 
     public NextStep() {
-        super(Material.DOUBLE_PLANT, "Next", Config.getString("items.lore.next_step"));
+        super(Material.TALL_GRASS, "Next", Config.getString("items.lore.next_step"));
     }
 }

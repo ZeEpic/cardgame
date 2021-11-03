@@ -1,9 +1,10 @@
 name: CardGame
 version: '${project.version}'
 main: me.zeepic.cardgame.Main
-api-version: 1.8
+api-version: 1.17
 authors: [ ZeEpic ]
-description: A Minecraft card game in version 1.8.
+description: A Minecraft card game.
+depend: [ Skript ] # for coding custom cards
 commands:
   test:
     description: For testing stuff.

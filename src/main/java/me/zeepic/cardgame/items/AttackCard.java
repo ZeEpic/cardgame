@@ -7,6 +7,6 @@ public final class AttackCard extends InventoryItem {
 
 
     public AttackCard() {
-        super(Material.WOOD_SWORD, "Attack", Config.getString("items.lore.attack_cards"));
+        super(Material.WOODEN_SWORD, "Attack", Config.getString("items.lore.attack_cards"));
     }
 }

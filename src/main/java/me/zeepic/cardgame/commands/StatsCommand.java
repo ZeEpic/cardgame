@@ -30,7 +30,7 @@ public class StatsCommand extends CustomCommand implements InventoryHolder {
 
     @Override
     public Inventory getInventory() {
-        PlayerDocument document = getPlugin().fetchPlayerDocument(viewing);
+        PlayerDocument document = Main.fetchPlayerDocument(viewing);
         Inventory inventory = Bukkit.createInventory(this, 9, viewing.getName());
         Map<Material, String[]> display = new HashMap<>();
         display.put(Material.IRON_CHESTPLATE, new String[]{"Rank", document.getRank().toString()});

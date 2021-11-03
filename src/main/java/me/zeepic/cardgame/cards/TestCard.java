@@ -18,13 +18,15 @@ public final class TestCard extends Warrior {
                 CardRarity.COMMON,
                 "Card lore goes here.",
                 owner,
-                "     Damage ⨠ Says a message in chat.\n" +
-                        "     Move ⨠ Says a message in chat.\n" +
-                        "     Play ⨠ Says a message in chat.\n" +
-                        "     Death ⨠ Says a message in chat.\n" +
-                        "     Attack ⨠ Says a message in chat.\n" +
-                        "     End Turn ⨠ Says a message in chat.\n" +
-                        "     Begin Turn ⨠ Says a message in chat.\n"
+                """
+                             Damage ⨠ Says a message in chat.
+                             Move ⨠ Says a message in chat.
+                             Play ⨠ Says a message in chat.
+                             Death ⨠ Says a message in chat.
+                             Attack ⨠ Says a message in chat.
+                             End Turn ⨠ Says a message in chat.
+                             Begin Turn ⨠ Says a message in chat.
+                        """
         );
         updateItem();
     }

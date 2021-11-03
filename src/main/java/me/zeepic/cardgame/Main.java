@@ -1,6 +1,9 @@
 package me.zeepic.cardgame;
 
-import com.mongodb.*;
+import ch.njol.skript.Skript;
+import ch.njol.skript.SkriptAddon;
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 import com.mongodb.reactivestreams.client.MongoCollection;
@@ -27,7 +30,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class Main extends JavaPlugin {
 
@@ -35,6 +42,7 @@ public final class Main extends JavaPlugin {
 
     @Getter private FileConfiguration myConfig;
     @Getter private static Main instance;
+    @Getter private SkriptAddon addon;
     @Getter private static final Map<OfflinePlayer, PlayerDocument> playerDocuments = new HashMap<>();
 
     @Getter private static final Map<String, Class<? extends Card>> cardMap = new HashMap<>();
@@ -83,6 +91,13 @@ public final class Main extends JavaPlugin {
         saveDefaultConfig();
         myConfig = getConfig();
         instance = this;
+        addon = Skript.registerAddon(this);
+
+        try {
+            addon.loadClasses("me.zeepic.cardgame", "elements");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         enableListeners();
         addCommand("test", new TestCommand(this));

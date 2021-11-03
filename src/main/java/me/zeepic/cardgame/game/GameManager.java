@@ -5,11 +5,13 @@ import lombok.Setter;
 import me.zeepic.cardgame.Main;
 import me.zeepic.cardgame.cards.Monster;
 import me.zeepic.cardgame.cards.TestCard;
+import me.zeepic.cardgame.enums.Action;
 import me.zeepic.cardgame.enums.State;
 import me.zeepic.cardgame.enums.Team;
+import me.zeepic.cardgame.events.MonsterActionEvent;
 import me.zeepic.cardgame.util.Config;
+import me.zeepic.cardgame.util.Util;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -89,9 +91,15 @@ public final class GameManager {
 
     public void endTurn(CardGamePlayer previousTurn) {
         previousTurn.setState(State.WAITING);
-        previousTurn.getPlayedCards().forEach(Monster::onEndTurn);
+        previousTurn.getPlayedCards().forEach(Monster::onEndTurn); // TODO: this should be deprecated
+        previousTurn.getPlayedCards().forEach(monster ->
+                Bukkit.getPluginManager().callEvent(new MonsterActionEvent(monster, Action.END_TURN))
+        );
         CardGamePlayer enemyPlayer = getOtherPlayer(previousTurn);
-        enemyPlayer.getPlayedCards().forEach(Monster::onBeginTurn);
+        enemyPlayer.getPlayedCards().forEach(Monster::onBeginTurn); // TODO: this should be deprecated
+        previousTurn.getPlayedCards().forEach(monster ->
+                Bukkit.getPluginManager().callEvent(new MonsterActionEvent(monster, Action.BEGIN_TURN))
+        );
         if (enemyPlayer.hasMovableCards()) // pass the turn, now the enemy can move their monsters
             enemyPlayer.setState(State.MOVE_STEP);
         else if (enemyPlayer.hasBloodthirstyCards())
@@ -104,7 +112,7 @@ public final class GameManager {
         }
         enemyPlayer.addCard(TestCard.class); // TODO: this will be a card from their deck
         enemyPlayer.addCastingPower(1);
-        enemyPlayer.getPlayer().sendTitle(ChatColor.GOLD + "Your Turn", " ");
+        Util.sendSimpleTitle(enemyPlayer.getPlayer(),"Your Turn");
         previousTurn.getPlayedCards().forEach(monster -> {
             monster.setSpeed(monster.getMaxSpeed());
             monster.updateArmorStand();
