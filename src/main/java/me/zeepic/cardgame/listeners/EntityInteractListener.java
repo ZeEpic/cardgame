@@ -25,7 +25,7 @@ import java.util.List;
 
 public class EntityInteractListener extends ListenerUtil implements Listener {
 
-    public static final Location spawnLocation = new Location(Bukkit.getWorld("world"), 1, 66, -12.5, -162, 4   );
+    public static final Location spawnLocation = new Location(Bukkit.getWorld("cards"), -1.5, 65, 0);
 
     private final Main plugin;
 

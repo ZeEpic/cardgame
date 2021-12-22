@@ -31,10 +31,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class Main extends JavaPlugin {
 
@@ -114,14 +111,14 @@ public final class Main extends JavaPlugin {
             }
         }
 
-        enableDB();
+        //enableDB();
 
         cardMap.put("TestCard", TestCard.class);
 
     }
 
     private void enableDB() {
-        ConnectionString connectionString = new ConnectionString("mongodb+srv://zeepic:it5fyvXZZAd2ZiLh@mhacard.trcd7.mongodb.net/ACard?retryWrites=true&w=majority");
+        ConnectionString connectionString = new ConnectionString("mongoclienturi");
         Bukkit.broadcastMessage(String.valueOf(connectionString.isDirectConnection()));
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)

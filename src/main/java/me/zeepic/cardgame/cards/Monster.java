@@ -87,8 +87,8 @@ public abstract class Monster extends Card implements InventoryHolder {
                                 getOwner().getTeam())
                         )
         );
-        onMove(); // TODO: remove this method
         Bukkit.getPluginManager().callEvent(new MonsterActionEvent(this, Action.MOVE));
+        onMove(); // TODO: remove this method
         // TODO make it move slowly
     }
 
@@ -107,10 +107,10 @@ public abstract class Monster extends Card implements InventoryHolder {
 
     @Override
     public void play(CardGamePlayer gamePlayer, BoardLocation location) {
+        Bukkit.getPluginManager().callEvent(new MonsterActionEvent(this, Action.PLAY));
         spawnPhysicalCard(location, getOwner().getTeam());
         gamePlayer.getPlayedCards().add(this);
         onPlayAction(); // TODO: remove this method
-        Bukkit.getPluginManager().callEvent(new MonsterActionEvent(this, Action.PLAY));
         getOwner().getPlayer().sendMessage(ChatColor.GREEN + "You played a " + getName() + ".");
     }
 

@@ -129,14 +129,14 @@ public class ArmorStandInteractions {
         if (!canAttackArmorStand)
             return;
 
+        Bukkit.getPluginManager().callEvent(new MonsterActionEvent(using, Action.ATTACK));
+        Bukkit.getPluginManager().callEvent(new MonsterActionEvent(card, Action.DAMAGED));
         card.setHealth(card.getHealth() - using.getDamage());
         using.onAttack(); // TODO: remove this method
-        Bukkit.getPluginManager().callEvent(new MonsterActionEvent(using, Action.ATTACK));
         if (card.getHealth() <= 0) {
             card.kill();
         } else {
             card.onDamage(); // TODO: remove this method
-            Bukkit.getPluginManager().callEvent(new MonsterActionEvent(card, Action.DAMAGED));
             using.updateArmorStand();
         }
         Location location = card.getLocation();
